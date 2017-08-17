@@ -69,12 +69,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GetDynamicsInstances.cs" />
+    <Compile Include="GetDynamicsInstanceTypeInfo.cs" />
+    <Compile Include="GetDynamicsWhoAmI.cs" />
     <Compile Include="Helpers\AuthenticationHelper.cs" />
     <Compile Include="Helpers\UrlFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Models\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -1,9 +1,8 @@
 ﻿using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
-using System.Text;
+using System.Net.Http.Headers;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MSDYN365AdminApiAndMore.Helpers
@@ -13,7 +12,7 @@ namespace MSDYN365AdminApiAndMore.Helpers
         private static string _clientId = "b954ae2b-8130-4b0e-a45a-d91ef9faec59";
         private static string _redirectUrl = "urn:ietf:wg:oauth:2.0:oob";
 
-        private string _endpoint = null;
+        private Uri _endpoint = null;
         private string _resource = null;
         private string _authority = null;
         private AuthenticationContext _authContext = null;
@@ -21,7 +20,7 @@ namespace MSDYN365AdminApiAndMore.Helpers
 
         public AuthenticationHelper(Uri endpoint)
         {
-            _endpoint = endpoint.GetLeftPart(UriPartial.Authority);
+            _endpoint = endpoint;
         }
 
         public string Authority
@@ -30,7 +29,7 @@ namespace MSDYN365AdminApiAndMore.Helpers
             {
                 if (_authority == null)
                 {
-                    DiscoverAuthority(new Uri(_endpoint + "/api/aad/challenge"));
+                    DiscoverAuthority(_endpoint);
                 }
                 return _authority;
             }
@@ -54,6 +53,14 @@ namespace MSDYN365AdminApiAndMore.Helpers
             {
                 Authorize();
                 return _authResult;
+            }
+        }
+
+        public HttpMessageHandler Handler
+        {
+            get
+            {
+                return new OAuthMessageHandler(this, new HttpClientHandler());
             }
         }
 
@@ -83,6 +90,20 @@ namespace MSDYN365AdminApiAndMore.Helpers
                     _authResult = await AuthContext.AcquireTokenAsync(_resource, _clientId, new Uri(_redirectUrl),
                     new PlatformParameters(PromptBehavior.Always));
                 }).Wait();
+            }
+        }
+
+        class OAuthMessageHandler : DelegatingHandler
+        {
+            AuthenticationHelper _auth = null;
+            public OAuthMessageHandler(AuthenticationHelper auth, HttpMessageHandler innerHandler) : base(innerHandler)
+            {
+                _auth = auth;
+            }
+            protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+            {
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _auth.AuthResult.AccessToken);
+                return base.SendAsync(request, cancellationToken);
             }
         }
     }

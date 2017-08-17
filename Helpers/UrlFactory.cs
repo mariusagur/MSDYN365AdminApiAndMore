@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MSDYN365AdminApiAndMore.Helpers
 {
@@ -24,6 +20,22 @@ namespace MSDYN365AdminApiAndMore.Helpers
                     );
             }
         }
+        public static Uri GetDiscoveryUrl(Uri serviceUrl, ApiType type)
+        {
+            var baseUrl = serviceUrl.GetLeftPart(UriPartial.Authority);
+            if (type == ApiType.Admin)
+            {
+                return new Uri(baseUrl + "/api/aad/challenge");
+            }
+            else if (type == ApiType.CustomerEngagement)
+            {
+                return new Uri(baseUrl + "/api/data");
+            }
+            else
+            {
+                throw new Exception($"Enum with name {type.ToString()} does not have discovery address configured");
+            }
+        }
     }
 
     public enum DataCenterLocations
@@ -38,5 +50,11 @@ namespace MSDYN365AdminApiAndMore.Helpers
         India = 8,
         NorthAmerica2 = 9,
         UnitedKingdom = 11
+    }
+
+    public enum ApiType
+    {
+        Admin,
+        CustomerEngagement
     }
 }

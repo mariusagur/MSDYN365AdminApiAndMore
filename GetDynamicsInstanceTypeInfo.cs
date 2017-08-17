@@ -5,8 +5,8 @@ using System.Net.Http;
 
 namespace MSDYN365AdminApiAndMore
 {
-    [Cmdlet(VerbsCommon.Get, "DynamicsInstances")]
-    public class GetDynamicsInstances : PSCmdlet
+    [Cmdlet(VerbsCommon.Get, "DynamicsInstanceTypeInfo")]
+    public class GetDynamicsDynamicsInstanceTypeInfo : PSCmdlet
     {
         [Parameter(Mandatory = true)]
         [ValidateSet("NorthAmerica", "SouthAmerica", "Canada", "EMEA", "APAC", "Oceania", "Japan", "India", "NorthAmerica2", "UnitedKingdom", IgnoreCase = true)]
@@ -18,7 +18,7 @@ namespace MSDYN365AdminApiAndMore
         {
             base.ProcessRecord();
             Enum.TryParse(Location, out DataCenterLocations tenantLocation);
-            var serverUrl = UrlFactory.GetUrl("admin.services", tenantLocation, "/api/v1/instances");
+            var serverUrl = UrlFactory.GetUrl("admin.services", tenantLocation, "/api/v1/InstanceTypeInfo");
 
             if (SessionState.PSVariable.Get("adminauth") != null)
             {
