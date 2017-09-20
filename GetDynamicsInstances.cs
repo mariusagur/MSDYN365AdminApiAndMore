@@ -1,5 +1,8 @@
 ﻿using MSDYN365AdminApiAndMore.Helpers;
+using MSDYN365AdminApiAndMore.Models;
+using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Management.Automation;
 using System.Net.Http;
 
@@ -33,11 +36,12 @@ namespace MSDYN365AdminApiAndMore
             using (var httpClient = new HttpClient(_auth.Handler))
             {
                 var result = httpClient.GetStringAsync(serverUrl).Result;
-                Console.WriteLine(result);
-                Console.ReadLine();
+                var instances = JsonConvert.DeserializeObject<List<InstanceDTO>>(result);
+                SessionState.PSVariable.Set("serverurl", serverUrl.GetLeftPart(UriPartial.Authority));
+                SessionState.PSVariable.Set("adminauth", _auth);
+                var instance = 3;
+                WriteObject(instances[instance]);
             }
-
-            SessionState.PSVariable.Set("adminauth", _auth);
         }
     }
 }
