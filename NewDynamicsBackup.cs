@@ -3,6 +3,7 @@ using MSDYN365AdminApiAndMore.Models;
 using Newtonsoft.Json;
 using System.Management.Automation;
 using System.Net.Http;
+using System.Text;
 using static MSDYN365AdminApiAndMore.Models.BackupRequestDTO;
 
 namespace MSDYN365AdminApiAndMore
@@ -52,7 +53,8 @@ namespace MSDYN365AdminApiAndMore
                 }
 
                 req.Label = Instance.UniqueName;
-                var result = httpClient.PostAsync(serverUrl, new StringContent(JsonConvert.SerializeObject(req)));
+                
+                var result = httpClient.PostAsync(serverUrl, new StringContent(JsonConvert.SerializeObject(req), Encoding.UTF8, "application/json"));
                 var response = result.Result;
             }
 

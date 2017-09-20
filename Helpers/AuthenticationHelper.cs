@@ -9,8 +9,6 @@ namespace MSDYN365AdminApiAndMore.Helpers
 {
     public class AuthenticationHelper
     {
-        //private static string _clientId = "b954ae2b-8130-4b0e-a45a-d91ef9faec59";
-        //private static string _redirectUrl = "urn:ietf:wg:oauth:2.0:oob";
         private static string _clientId = "2ad88395-b77d-4561-9441-d0e40824f9bc";
         private static string _redirectUrl = "app://5d3e90d6-aa8e-48a8-8f2c-58b45cc67315/";
 
