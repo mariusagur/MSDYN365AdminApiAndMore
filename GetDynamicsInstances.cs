@@ -3,6 +3,7 @@ using MSDYN365AdminApiAndMore.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Management.Automation;
 using System.Net.Http;
 
@@ -14,6 +15,8 @@ namespace MSDYN365AdminApiAndMore
         [Parameter(Mandatory = true)]
         [ValidateSet("NorthAmerica", "SouthAmerica", "Canada", "EMEA", "APAC", "Oceania", "Japan", "India", "NorthAmerica2", "UnitedKingdom", IgnoreCase = true)]
         public string Location;
+        [Parameter]
+        public string UniqueName;
 
         private AuthenticationHelper _auth = null;
 
@@ -39,8 +42,16 @@ namespace MSDYN365AdminApiAndMore
                 var instances = JsonConvert.DeserializeObject<List<InstanceDTO>>(result);
                 SessionState.PSVariable.Set("serverurl", serverUrl.GetLeftPart(UriPartial.Authority));
                 SessionState.PSVariable.Set("adminauth", _auth);
-                var instance = 3;
-                WriteObject(instances[instance]);
+                
+                if (string.IsNullOrWhiteSpace(UniqueName))
+                {
+                    WriteObject(instances);
+                }
+                else
+                {
+                    var instance = instances.First(i => i.UniqueName.Equals(UniqueName, StringComparison.InvariantCultureIgnoreCase));
+                    WriteObject(instance);
+                }
             }
         }
     }
