@@ -6,7 +6,6 @@ namespace MSDYN365AdminApiAndMore.Models
     {
         public Guid InstanceId { get; set; }
         public string Label { get; set; }
-        public string Notes { get; set; }
         public bool IsAzureBackup { get; set; }
         public AzureStorage AzureStorageInformation { get; set; }
         public class AzureStorage

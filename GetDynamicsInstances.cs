@@ -6,10 +6,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Management.Automation;
 using System.Net.Http;
+using System.Security.Cryptography.X509Certificates;
 
 namespace MSDYN365AdminApiAndMore
 {
-    [Cmdlet(VerbsCommon.Get, "DynamicsInstances")]
+    [Cmdlet(VerbsCommon.Get, "DynamicsInstances", DefaultParameterSetName = "default")]
     public class GetDynamicsInstances : PSCmdlet
     {
         [Parameter(Mandatory = true)]
@@ -17,6 +18,12 @@ namespace MSDYN365AdminApiAndMore
         public string Location;
         [Parameter]
         public string UniqueName;
+        [Parameter(ParameterSetName = "credentials", Mandatory = true)]
+        public PSCredential Credentials;
+        [Parameter(ParameterSetName = "certificate", Mandatory = true)]
+        public X509Certificate2 Certificate;
+        [Parameter(ParameterSetName = "certificate", Mandatory = true)]
+        public string ClientId;
 
         private AuthenticationHelper _auth = null;
 
@@ -33,7 +40,14 @@ namespace MSDYN365AdminApiAndMore
             else
             {
                 var discoveryUrl = UrlFactory.GetDiscoveryUrl(serverUrl, ApiType.Admin);
-                _auth = new AuthenticationHelper(discoveryUrl);
+                if (Certificate == null || string.IsNullOrWhiteSpace(ClientId))
+                {
+                    _auth = new AuthenticationHelper(discoveryUrl, Credentials?.UserName, Credentials?.Password);
+                }
+                else
+                {
+                    _auth = new AuthenticationHelper(discoveryUrl, ClientId, Certificate);
+                }
             }
 
             using (var httpClient = new HttpClient(_auth.Handler))
@@ -42,7 +56,7 @@ namespace MSDYN365AdminApiAndMore
                 var instances = JsonConvert.DeserializeObject<List<InstanceDTO>>(result);
                 SessionState.PSVariable.Set("serverurl", serverUrl.GetLeftPart(UriPartial.Authority));
                 SessionState.PSVariable.Set("adminauth", _auth);
-                
+
                 if (string.IsNullOrWhiteSpace(UniqueName))
                 {
                     WriteObject(instances);

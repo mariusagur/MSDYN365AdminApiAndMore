@@ -38,22 +38,21 @@ namespace MSDYN365AdminApiAndMore
             {
                 var req = new BackupRequestDTO
                 {
-                    InstanceId = Instance.Id,
-                    Notes = Description
+                    InstanceId = Instance.Id
                 };
                 if (ParameterSetName == _azureBackupName)
                 {
                     req.AzureStorageInformation = new AzureStorage
                     {
-                        ContainerName = "YourContainerName",
-                        StorageAccountKey = "YourStorageAccountKey",
-                        StorageAccountName = "YourStorageAccountName"
+                        ContainerName = ContainerName,
+                        StorageAccountKey = StorageAccountKey,
+                        StorageAccountName = StorageAccountName
                     };
                     req.IsAzureBackup = true;
                 }
 
-                req.Label = Instance.UniqueName;
-                
+                req.Label = Description;
+
                 var result = httpClient.PostAsync(serverUrl, new StringContent(JsonConvert.SerializeObject(req), Encoding.UTF8, "application/json"));
                 var response = result.Result;
             }
